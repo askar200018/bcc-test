@@ -1,25 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-function App() {
+interface Breed {
+  [key: string]: string[];
+}
+
+const getBreeds = () => {
+  return axios.get('https://dog.ceo/api/breeds/list/all');
+};
+
+const getImages = (breed: string) => {
+  return axios.get(`https://dog.ceo/api/breed/${breed}/images/random/3`);
+};
+
+const App = () => {
+  const [breeds, setBreeds] = useState<Breed>({});
+  const [show, setShow] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  useEffect(() => {
+    const initialBreeds = async () => {
+      const { data } = await getBreeds();
+      setBreeds(data.message);
+    };
+    initialBreeds().catch((err) => console.error(err));
+  }, []);
+
+  const showImages = async (breed: string) => {
+    const { data } = await getImages(breed);
+    setImages(data.message);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {images.length > 0 &&
+        images.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt="Image of"
+            height={160}
+            width={160}
+            style={{
+              objectFit: 'cover',
+              margin: 8,
+            }}
+          />
+        ))}
+      <ul>
+        {Object.entries(breeds).map(([breed, subBreeds], index) => (
+          <li key={index}>
+            {breed} <button onClick={() => showImages(breed)}>Show</button>
+            <ul>
+              {subBreeds.map((sub, index) => (
+                <li key={index}>{sub}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default App;
