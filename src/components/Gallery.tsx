@@ -11,7 +11,6 @@ const Gallery = ({ images }: Props) => {
           src={image}
           alt="Image of breed"
           height={160}
-          width={160}
           style={{
             objectFit: 'cover',
             margin: 8,
