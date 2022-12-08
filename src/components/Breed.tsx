@@ -1,11 +1,8 @@
-import { PropsWithChildren } from 'react';
+import { Box, Button, ListItem, Typography } from '@mui/material';
+import { PropsWithChildren, useState } from 'react';
 import { useLoadImages } from '../hooks/useLoadImages';
+import ErrorModal from './ErrorModal';
 import Gallery from './Gallery';
-
-interface Props {
-  breed: string;
-  subBreed?: string;
-}
 
 const BUTTON_STATE = {
   LOADING: 'Загружается',
@@ -13,34 +10,58 @@ const BUTTON_STATE = {
   UPDATE: 'Обновить',
 };
 
-const Breed: React.FC<PropsWithChildren<Props>> = ({ breed, subBreed, children }) => {
-  const { images, error, isLoading, handleShowImages } = useLoadImages(breed, subBreed);
+interface Props {
+  breed: string;
+  subBreed?: string;
+}
 
-  const galleryContent = <>{isLoading ? <p>Images are loading</p> : <Gallery images={images} />}</>;
+const Breed: React.FC<PropsWithChildren<Props>> = ({ breed, subBreed, children }) => {
+  const [open, setOpen] = useState(false);
+
+  const openErrorModal = () => {
+    setOpen(true);
+  };
+
+  const { images, isLoading, handleShowImages } = useLoadImages({
+    breed,
+    subBreed,
+    openErrorModal,
+  });
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const buttonText = isLoading
     ? BUTTON_STATE.LOADING
     : images.length === 0
       ? BUTTON_STATE.SHOW
       : BUTTON_STATE.UPDATE;
+
   return (
-    <li>
-      {breed} {subBreed && subBreed}
-      <button onClick={handleShowImages}>{buttonText}</button>
-      <div>
-        {error ? (
-          <p
-            style={{
-              color: 'red',
-            }}
-          >
-            {error}
-          </p>
-        ) : (
-          galleryContent
-        )}
-      </div>
+    <ListItem
+      disablePadding
+      sx={{
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        marginY: 0.5,
+      }}
+    >
+      <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
+        <Typography variant="subtitle1">
+          {breed} {subBreed && subBreed}
+        </Typography>
+        <Button variant="contained" size="small" onClick={handleShowImages}>
+          {buttonText}
+        </Button>
+      </Box>
+      <Box>
+        <Gallery images={images} />
+      </Box>
+
+      <ErrorModal open={open} onClose={handleClose} />
       {children}
-    </li>
+    </ListItem>
   );
 };
 

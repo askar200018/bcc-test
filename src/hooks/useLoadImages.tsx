@@ -1,11 +1,15 @@
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 import { getImagesByBreed } from '../services/dogs';
 
-const ERROR_MESSAGE = 'Упс! Что-то пошло не так!';
+interface Props {
+  breed: string;
+  subBreed?: string;
+  openErrorModal: () => void;
+}
 
-export const useLoadImages = (breed: string, subBreed?: string) => {
+export const useLoadImages = ({ breed, subBreed, openErrorModal }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [controller, setController] = useState<AbortController>();
 
@@ -33,10 +37,15 @@ export const useLoadImages = (breed: string, subBreed?: string) => {
       setImages(fetchedImages);
 
       setIsLoading(false);
-      setError(null);
     } catch (err) {
-      setError(ERROR_MESSAGE);
       setIsLoading(false);
+
+      if (isAxiosError(err)) {
+        if (err.name === 'CanceledError') {
+          return;
+        }
+      }
+      openErrorModal();
     }
   };
 
@@ -50,7 +59,6 @@ export const useLoadImages = (breed: string, subBreed?: string) => {
 
   return {
     isLoading,
-    error,
     images,
     handleShowImages,
   };
