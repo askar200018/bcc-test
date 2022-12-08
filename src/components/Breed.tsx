@@ -1,4 +1,4 @@
-import { Box, Button, ListItem, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, ListItem, Typography } from '@mui/material';
 import { PropsWithChildren, useState } from 'react';
 import { useLoadImages } from '../hooks/useLoadImages';
 import ErrorModal from './ErrorModal';
@@ -55,10 +55,7 @@ const Breed: React.FC<PropsWithChildren<Props>> = ({ breed, subBreed, children }
           {buttonText}
         </Button>
       </Box>
-      <Box>
-        <Gallery images={images} />
-      </Box>
-
+      <Box>{isLoading ? <CircularProgress size={60} /> : <Gallery images={images} />}</Box>
       <ErrorModal open={open} onClose={handleClose} />
       {children}
     </ListItem>
