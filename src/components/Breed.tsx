@@ -33,7 +33,7 @@ const Breed: React.FC<PropsWithChildren<Props>> = ({ breed, subBreed, children }
   const { images, isLoading, handleShowImages } = useLoadImages({
     breed,
     subBreed,
-    openErrorModal,
+    onHandleError: openErrorModal,
   });
 
   const handleClose = () => {

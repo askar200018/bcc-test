@@ -5,10 +5,10 @@ import { getImagesByBreed } from '../services/dogs';
 interface Props {
   breed: string;
   subBreed?: string;
-  openErrorModal: () => void;
+  onHandleError: () => void;
 }
 
-export const useLoadImages = ({ breed, subBreed, openErrorModal }: Props) => {
+export const useLoadImages = ({ breed, subBreed, onHandleError }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [controller, setController] = useState<AbortController>();
@@ -45,7 +45,7 @@ export const useLoadImages = ({ breed, subBreed, openErrorModal }: Props) => {
           return;
         }
       }
-      openErrorModal();
+      onHandleError();
     }
   };
 
